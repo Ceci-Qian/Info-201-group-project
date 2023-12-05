@@ -1,0 +1,93 @@
+---
+title: "Final Project"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r}
+library(readxl)
+library(dplyr)
+```
+
+```{r}
+washington_2020 <- read_excel("./Washington_Offense_Type_2020.xls")
+washington_2021 <- read_excel("./Washington_Offense_Type_2021.xls")
+washington_2022 <- read_excel("./Washington_Offense_Type_2022.xls")
+```
+
+
+#### rename offenses
+```{r}
+washington_2020 <-
+  washington_2020%>%
+  rename(Total_Offenses_2020=colnames("Total
+Offenses"))
+
+washington_2021 <- 
+  washington_2021%>%
+  rename(Total_Offenses_2021=colnames("Total
+Offenses"))
+
+washington_2022 <- 
+  washington_2022%>%
+  rename(Total_Offenses_2022=colnames("Total
+Offenses"))
+```
+
+
+### combine cities
+```{r}
+common_cities <- inner_join(washington_2020, washington_2021, by = "Cities") %>%
+                 inner_join(washington_2022, by = "Cities")
+```
+
+### sorting region
+```{r}
+eastern_cities <- c( "Airway Heights", "Bingen", "Brewster", "Cheney", "Clarkston", "Cle Elum", "College Place", "Colville",
+"Connell", "Coulee Dam", "East Wenatchee", "Ellensburg", "Ephrata", "Grand Coulee","Grandview", "Kennewick", "Kettle Falls",
+"Liberty Lake", "Moses Lake","Moxee", "Othello","Pasco", "Prosser", "Pullman", "Quincy", "Reardan","Richland", "Ritzville", "Royal City", "Selah", "Soap Lake", "Spokane", "Spokane Valley", "Toppenish", "Union Gap", "Walla Walla", "Warden", "Washougal", "Wenatchee", "West Richland", "Yakima")
+
+western_cities <- c( "Aberdeen", "Algona", "Anacortes", "Arlington", "Auburn","Bainbridge Island", "Battle Ground", "Beaux Arts", "Bellevue", "Bellingham", "Black Diamond", "Blaine", "Bonney Lake", "Bothell", "Bremerton","Brier", "Buckley", "Burien", "Burlington", "Camas", "Carnation", "Castle Rock", "Centralia", "Chehalis", "Covington", "Darrington", "Des Moines", "Dupont", "Duvall", "Eatonville", "Edgewood", "Edmonds", "Elma", "Enumclaw", "Everett", "Everson", "Federal Way", "Ferndale", "Fife", "Fircrest", "Gig Harbor", "Gold Bar", "Goldendale", "Granite Falls", "Hoquiam", "Ilwaco", "Index", "Issaquah", "Kalama", "Kelso", "Kenmore", "Kent", "Kirkland", "La Center", "Lacey", "Lake Forest Park", "Lake Stevens", "Lakewood", "Langley", "Long Beach", "Longview", "Lynden", "Lynnwood", "Maple Valley", "Marysville", "Medina", "Mercer Island", "Mill Creek", "Milton", "Monroe", "Montesano", "Mountlake Terrace", "Mount Vernon", "Mukilteo", "Napavine", "Newcastle", "Newport", "Normandy Park", "North Bend", "Oak Harbor", "Oakville", "Olympia", "Orting", "Pacific", "Port Angeles", "Port Orchard", "Port Townsend", "Poulsbo", "Puyallup", "Raymond", "Redmond", "Renton", "Ridgefield", "Roy", "Ruston", "Sammamish", "SeaTac", "Seattle", "Sedro Woolley", "Sequim", "Shelton", "Shoreline", "Skykomish", "Snohomish", "Snoqualmie", "South Bend", "Stanwood", "Steilacoom", "Sultan", "Sumas", "Sumner", "Sunnyside", "Tacoma", "Tukwila", "Tumwater", "University Place", "Vancouver", "Westport", "White Salmon", "Winlock", "Woodinville", "Woodland", "Woodway", "Yelm")
+
+
+common_cities$region <- ifelse(common_cities$Cities %in% eastern_cities, "Eastern", "Western")
+```
+
+### Rename
+```{r}
+processed_data <- common_cities %>% 
+  select(Cities, region, `Total
+Offenses.x`, `Total
+Offenses.y`, `Total Offences`, Population1.x, Population1.y, Population1) %>% 
+  rename(total_offense_2020 = `Total
+Offenses.x`, total_offense_2021 = `Total
+Offenses.y`, total_offense_2022 = `Total Offences`) %>%
+  rename(Population_2020 = Population1.x,
+         Population_2021 = Population1.y,
+         Population_2022=Population1)
+
+```
+
+<!-- ### select -->
+<!-- ```{r} -->
+<!-- processed_data %>% -->
+<!--   rename(Population_2020=Population1.x, -->
+<!--          Population2021=Population1.y, -->
+<!--          Population_2022=Population1,) %>%  -->
+<!--   select(Cities, Population_2020, Population2021, Population_2022, Total_Offenses_2020, `Total -->
+<!-- Offenses.x`) -->
+
+<!-- ``` -->
+
+
+### crimea_rate_cal
+```{r}
+processed_data %>% 
+  mutate(crime_rate_2020 = total_offense_2020 / Population_2020) %>% 
+  mutate(crime_rate_2021 = total_offense_2021 / Population_2021) %>% 
+  mutate(crime_rate_2022 = total_offense_2022 / Population_2022)
+```
+
+
+
+
