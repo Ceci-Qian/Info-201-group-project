@@ -13,3 +13,4 @@ Our project's significance is its potential to fill gaps in understanding about 
 To visually convey our insights, we have included a figure depicting a comparative analysis of crime rates in Eastern and Western Washington over the last three years, providing a snapshot of our comprehensive study.
 
 ![Screenshot](screenshot.pdf)
+
