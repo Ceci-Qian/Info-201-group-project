@@ -2,10 +2,10 @@
 
 ## Executive summary
 
-(5 points) The Github readme file should contain a 1/2-1 page summary of your work.
+_(5 points) The Github readme file should contain a 1/2-1 page summary of your work.
 It should 
 contain one figure that you have computed and created from data.
-tell who is the target audience of your story:
+tell who is the target audience of your story:_
 
 Our project is an analysis of crime trends in Washington State, focusing on patterns in the Eastern and Western regions. Our project goal is to inform strategic decision-making and policy development for the enhancement of public safety. We will be using a number of research questions to guide our investigation, such as the evolution of crime rates from 2020 to 2022 in Eastern and Western Washington, disparities in crime statistics between these regions, prevalence of specific crime types, and the impact of urbanization and population size on crime rates. 
 
