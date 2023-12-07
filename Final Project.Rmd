@@ -7,6 +7,8 @@ date: "`r Sys.Date()`"
 ```{r}
 library(readxl)
 library(dplyr)
+library(tidyr)
+library(ggplot2)
 ```
 
 ```{r}
@@ -51,9 +53,133 @@ western_cities <- c( "Aberdeen", "Algona", "Anacortes", "Arlington", "Auburn","B
 
 
 common_cities$region <- ifelse(common_cities$Cities %in% eastern_cities, "Eastern", "Western")
+
 ```
 
-### Rename
+### Summarise Amount of Total Crime Types
+```{r}
+common_cities6<-common_cities%>%
+    group_by(region)%>%
+    summarise(Total_Crime_Person_2020=sum(`Crimes
+Against
+Persons.x`),
+            Total_Crime_Person_2021=sum(`Crimes
+Against
+Persons.y`),
+            Total_Crime_Person_2022=sum(`Crimes Against Persons`),
+            Total_Crime_Property_2020=sum(`Crimes
+Against
+Property.x`),
+            Total_Crime_Property_2021=sum(`Crimes
+Against
+Property.y`),
+            Total_Crime_Property_2022=sum(`Crimes Against Property`),
+            Total_Crime_Society_2020=sum(`Crimes
+Against
+Society.x`),
+            Total_Crime_Society_2021=sum(`Crimes
+Against
+Society.y`),
+            Total_Crime_Society_2022=sum(`Crimes Against Society` ))
+
+
+  
+```
+
+### Reshape Offenses Type and Merge into One Table along Timeline
+```{r}
+Long_data_type <- common_cities6 %>%
+  select(region,Total_Crime_Person_2020,Total_Crime_Person_2021,Total_Crime_Person_2022)%>%
+  pivot_longer(
+    cols = starts_with("Total_Crime_Person_"),
+    names_to = "Year",
+    names_prefix = "Total_Crime_Person_",
+    values_to = "Total Crime Person"
+  ) %>%
+  mutate(Year = as.integer(Year)) 
+
+print(Long_data_type)
+
+Long_data_type_1 <- common_cities6 %>%
+  select(region,  Total_Crime_Property_2020,  Total_Crime_Property_2021, Total_Crime_Property_2022)%>%
+  pivot_longer(
+    cols = starts_with("Total_Crime_Property_"),
+    names_to = "Year",
+    names_prefix = "Total_Crime_Property_",
+    values_to = "Total Crime Property"
+  ) %>%
+  mutate(Year = as.integer(Year))  # Convert Year to integer if necessary
+
+print( Long_data_type_1)
+
+
+Merge_type<-inner_join(Long_data_type,Long_data_type_1,by=c("Year","region"))
+Merge_type$region.y <- NULL
+names(Merge_type)[names(Merge_type) == 'region.x'] <- 'region'
+
+# print(Merge_type)
+
+Long_data_type_2 <- common_cities6 %>%
+  select(region,   Total_Crime_Society_2020,  Total_Crime_Society_2021,  Total_Crime_Society_2022)%>%
+  pivot_longer(
+    cols = starts_with("Total_Crime_Society_"),
+    names_to = "Year",
+    names_prefix = "Total_Crime_Society_",
+    values_to = "Total Crime Society"
+  ) %>%
+  mutate(Year = as.integer(Year))  # Convert Year to integer if necessary
+
+print( Long_data_type_2)
+
+
+Merge_type2<-inner_join(Merge_type,Long_data_type_2,by=c("Year","region"))
+Merge_type2$region.y <- NULL
+names(Merge_type2)[names(Merge_type2) == 'region.x'] <- 'region'
+print(Merge_type2)
+```
+
+
+### ggplot of Offenses Type along Timeline
+```{r}
+df <- data.frame(
+  Region = c('Eastern', 'Eastern', 'Eastern', 'Western', 'Western', 'Western'),
+  Year = c(2020, 2021, 2022, 2020, 2021, 2022),
+  Total_Crime_Person = c(14675, 14721,15973,44555,48233,52366),
+  Total_Crime_Property = c(56354,52523,61167,222688,230480,258446),
+  Total_Crime_Society=c(5246,2632,2766,17741,9185,9847)
+)
+
+
+Type_eastern <- subset(df, Region == 'Eastern')
+Type_western <- subset(df, Region == 'Western')
+
+CT_east <- ggplot(Type_eastern, aes(x = Year)) +
+  geom_line(aes(y = Total_Crime_Person, colour = "Total Crime Person")) +
+  geom_line(aes(y = Total_Crime_Property, colour = "Total Crime Property")) +
+  geom_line(aes(y = Total_Crime_Society, colour = "Total Crime Society")) +
+  scale_colour_manual(name="Crime Type", 
+                      breaks = c("Total Crime Person", "Total Crime Property", "Total Crime Society"),
+                      values = c("Total Crime Person" = "red", "Total Crime Property" = "blue","Total Crime Society" = "green")) +
+  labs(x = "Year", y = "Total Crime Offenses", title = "Eastern Region: Total Population and Total Offenses Over Years",color="Crime Type")
+
+CT_east
+
+
+CT_west <- ggplot(Type_western, aes(x = Year)) +
+  geom_line(aes(y = Total_Crime_Person, colour = "Total Crime Person")) +
+  geom_line(aes(y = Total_Crime_Property, colour = "Total Crime Property")) +
+  geom_line(aes(y = Total_Crime_Society, colour = "Total Crime Society")) +
+  scale_colour_manual(name="Crime Type", 
+                      breaks = c("Total Crime Person", "Total Crime Property", "Total Crime Society"),
+                      values = c("Total Crime Person" = "red", "Total Crime Property" = "blue","Total Crime Society" = "green")) +
+  labs(x = "Year", y = "Total Crime Offenses", title = "Western Region: Total Population and Total Offenses Over Years") 
+
+CT_west
+```
+
+
+
+### Rename the Variables
 ```{r}
 processed_data <- common_cities %>% 
   select(Cities, region, `Total
@@ -68,26 +194,94 @@ Offenses.y`, total_offense_2022 = `Total Offences`) %>%
 
 ```
 
-<!-- ### select -->
-<!-- ```{r} -->
-<!-- processed_data %>% -->
-<!--   rename(Population_2020=Population1.x, -->
-<!--          Population2021=Population1.y, -->
-<!--          Population_2022=Population1,) %>%  -->
-<!--   select(Cities, Population_2020, Population2021, Population_2022, Total_Offenses_2020, `Total -->
-<!-- Offenses.x`) -->
 
-<!-- ``` -->
-
-
-### crimea_rate_cal
+### Crime_rate_cal
 ```{r}
-processed_data %>% 
+processed_data <-processed_data %>% 
   mutate(crime_rate_2020 = total_offense_2020 / Population_2020) %>% 
   mutate(crime_rate_2021 = total_offense_2021 / Population_2021) %>% 
   mutate(crime_rate_2022 = total_offense_2022 / Population_2022)
+head(processed_data)
 ```
 
+### ggplot of Total Offenses vs. Total Population in 3 years
+```{r}
+processed_data%>%
+  filter(Population_2020<=700000)%>%
+ggplot( aes(x = Population_2020, y =total_offense_2020,as.factor(region), color = region)) +
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE)+  
+  labs(title="Total Offenses vs. Population in 2020",
+       x = "Population 2020",
+       y ="Total Offense 2020")+
+  theme_minimal() 
 
+processed_data%>%
+  filter(Population_2021<=700000)%>%
+ggplot( aes(x = Population_2021, y =total_offense_2021,as.factor(region), color = region)) +
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE)  +  
+  labs(title="Total Offenses vs. Population in 2021")+
+   labs(title="Total Offenses vs. Population in 2021",
+       x = "Population 2021",
+       y ="Total Offense 2021")+
+  theme_minimal() 
+processed_data%>%
+  filter(Population_2021<=700000)%>%
+ggplot( aes(x = Population_2022, y =total_offense_2022,as.factor(region), color = region)) +
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE) +  
+   labs(title="Total Offenses vs. Population in 2022",
+       x = "Population 2022",
+       y ="Total Offense 2022")+
+  theme_minimal() 
+```
+
+### Reshape Crime Rate along TimeLine
+```{r}
+processed_data2<-processed_data%>%
+  group_by(region)%>%
+  summarise(
+            Total_Population_2020=sum(Population_2020),
+            Total_Population_2021=sum(Population_2021),
+            Total_Population_2022=sum(Population_2022),
+            Total_Offenses_2020=sum(total_offense_2020),
+            Total_Offenses_2021=sum(total_offense_2021),
+            Total_Offenses_2022=sum(total_offense_2022))
+print(processed_data2)
+
+processed_data2<-processed_data2%>%
+  group_by(region)%>%
+ summarise(Total_crime_2020= Total_Offenses_2020/Total_Population_2020,
+            Total_crime_2021= Total_Offenses_2021/Total_Population_2021,
+             Total_crime_2022= Total_Offenses_2022/Total_Population_2022)
+
+ processed_data3<-processed_data2%>%
+   select(region,Total_crime_2020,Total_crime_2021,Total_crime_2022)
+
+ long_data <- processed_data3 %>%
+   pivot_longer(
+     cols = starts_with("Total_crime_"),
+     names_to = "Year",
+     names_prefix = "Total_crime_",
+     values_to = "Crime_Rate"
+   ) %>%
+   mutate(Year = as.integer(Year)) 
+ 
+ print(long_data)
+```
+
+### ggplot of Crime Rate 
+```{r}
+library(ggplot2)
+long_data%>%
+ ggplot( aes(x = Year, y =Crime_Rate, color = region )) +
+geom_point() + 
+  geom_line(size=1)+  
+  labs(title="Crime Rate over Three Years in WA",
+       x="Year",
+       y="Crime Rate")
+  theme_minimal() 
+```
 
 
