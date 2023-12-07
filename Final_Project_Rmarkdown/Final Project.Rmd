@@ -1,0 +1,492 @@
+---
+title: "Final Project"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r}
+library(readxl)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+```{r}
+washington_2020 <- read_excel("./Washington_Offense_Type_2020.xls")
+washington_2021 <- read_excel("./Washington_Offense_Type_2021.xls")
+washington_2022 <- read_excel("./Washington_Offense_Type_2022.xls")
+```
+
+## 1. Introduction
+### 1.1 where you give the context–why is this an interesting topic?
+
+Crime is a complex and critical issue that affects communities, law enforcement, and policymakers. Understanding the dynamics of crime trends in Washington State holds significant practical implications for public safety and policy development. Washington is a state within the United States that has diverse regions, and faces unique challenges related to crime. Using the analysis of crime trends, our project aims to understand the factors contributing to the criminal activities in both Eastern and Western Washington. The significance of this study is its potential to inform strategic decision-making, shape law enforcement priorities, and contribute to the development of effective policies that enhance community safety.
+
+### 1.2 what do we already know about this topic? This should be based on what you read from media or literature, not on what do you do below!
+Existing literature and media coverage provide insights into the broader issue of crime in the United States but is lacking a specific focus on Washington State's regional variations and the evolution of crime rates over recent years. Our project hopes to address these gaps in order to grow our understanding of crime in Washington. 
+
+Our project’s analysis becomes particularly crucial when considering the potential disparities between Eastern and Western Washington. These regions may exhibit unique socio-economic characteristics, cultural influences, and historical contexts that play a role in shaping crime trends. With the current analytics that do not look into the regional variations that exist over the last 3 years, we risk overlooking critical insights that could inform targeted interventions, policies, and community engagement 
+
+Washington State's Eastern and Western regions are influenced by unique socio-economic, cultural, and geographic factors. In Eastern Washington, the topography is marked by vast agricultural expanses and smaller, close-knit communities, contributing to a distinct rural environment. This region often faces socio-economic challenges and has areas of economic disparities and limited access to resources. On the other hand Western Washington is home to major cities such as Seattle and experiences a more urbanized and cosmopolitan setting. The western part of the state includes greater economic opportunities, a higher population density, and a more diverse cultural landscape with both urban cities and mountainous regions. These regional disparities have the potential to contribute to different crime dynamics. For instance, the close-knit communities in Eastern Washington may influence certain crime patterns, while urbanization in the West may give rise to different types of criminal activities. Understanding these regional differences is crucial for interpreting crime trends and finding effective interventions that resonate with the unique challenges faced by communities in both Eastern and Western Washington. Our research looks to analyze these factors to identify whether or not they actually affect crime statistics like preconceived notions may initially suspect.
+
+### 1.3 explain what exactly are you doing. This can be stated as questions you want to answer, or some kind of stories you want to tell. There should be one question or one story line for each member of the group, so you need to have at least as many research questions as the group size. 
+
+Our research revolves around questions designed to explain various statistics of crime trends within Washington State. **1)** Our first question explores the evolution of crime rates from 2020 to 2022 across Eastern and Western Washington. Our investigation explores the disparities in crime statistics between the two distinctive regions of Eastern and Western Washington. Understanding these differences is essential for region-specific interventions and policies that address the distinct challenges faced by communities in each region made by policymakers, researchers, and law enforcement.**2）** We will also investigate the prevalence of certain types of crimes in specific regions, looking into whether patterns exist that differentiate crime types between Eastern and Western Washington. Recognizing patterns in crime types can guide resource allocation and policy formulation to effectively combat prevalent offenses in each region. **3）**Lastly, our study examines the impact of the number of cities and population size on crime rates, challenging any preconceived notions about their relationship. By scrutinizing these demographic variables, our goal is to understand the relationships between urbanization, population density, and crime rates. **4）**Our research questions help provide a comprehensive understanding of crime trends and provide practical insights that can guide evidence-based decision-making for law enforcement, policymakers, and members of the communities in Western and Eastern Washington.
+
+**This is a list of the research questions we are looking to answer: **
+
+1) How do crime rates vary over time in Washington states?  
+
+2) What is the relationship between total crime offenses and total population in both Western and Eastern Washington?
+
+3) Do the most prevalent types of crimes in Washington State vary by region?
+
+4) What specific categories of criminal activity should law enforcement prioritize their efforts toward?
+
+
+### 1.4  explain why is it interesting–why should someone care? why should someone read your report?
+
+Our study holds tangible significance with implications for various stakeholders in Washington State. Law enforcement agencies that are tasked with ensuring public safety could benefit from our findings by gaining insights into crime patterns and identifying challenges specific to each region. Policymakers can use this information to formulate evidence-based policies that address the unique dynamics of crime in both Eastern and Western Washington. Researchers that are attempting to deepen their understanding of regional crime trends could use our analysis as a valuable resource to build or back up claims. Additionally, the general public could gain knowledge about the safety of their region of the state and contribute to creating safer and more informed neighborhoods. The creation of safer and more informed communities is the main significance of our analysis. Our statistical analysis has the ability to contribute to the collaborative efforts between law enforcement, policymakers, and the public to collectively enhance community safety.
+
+## 2. Explain Your Data
+### 2.1 Why do you use these datasets?
+
+In choosing data, we use three datasets in 2020,2021,2022 about Offenses crime in Washington States. These tables have similar variables and names, which means that we could merge them to reach the statistics we want.
+
+### 2.2  Where do your datasets originate from?
+
+The data presented today has been sourced from the Federal Bureau of Investigation Crime Data Explorer, a comprehensive data library that allows us to explore crime trends in Washington State. 
+
+### 2.3 Who collected data?
+
+The Federal Bureau of Investigation (FBI) Crime Data Explorer is an online tool provided by the FBI's Criminal Justice Information Services (CJIS) Division. It provides comprehensive statistics, maps, and data on state and national crime rates. Users have access to the Crime Data API and can download large amounts of data, enabling current, thorough insights into crime trends at different levels. Law enforcement organizations have been exchanging crime data since 1930, according to the FBI's Uniform Crime Reporting (UCR) Program. The more thorough National Incident-Based Reporting System (NIBRS) replaced the Summary Reporting System (SRS) in 2021 for UCR. SRS data from agencies that were not migrated was included for 2022. The Crime Data Explorer's API and bulk downloads provide access to this data. (These are paraphrased from FBI websites)
+
+### 2.4 The data usage permissions: are the data freely available for everyone? Are there certain restrictions on who can access data, or for what purpose it can be used (e.g. non-commercial only)?
+
+Sections 701 and 709 of Title 18, United States Code prohibit the unauthorized use of the FBI seal, the words "Federal Bureau of Investigation," the initials "FBI," and any colorable imitation of these words and initials "in a manner reasonably calculated to convey the impression that such [activity]... is approved, endorsed, or authorized by the Federal Bureau of Investigation." This means that any information the Bureau provides on these sites that is not otherwise attributed **is considered public information** and may be distributed or copied. (These are paraphrased from FBI websites).
+
+### 2.5 What are the datasets about? What is the population and what is the sample?
+
+The datasets show the population, total number of crime offenses, and number of crime offenses in three types, offering insights into the crime dynamics within the populations of cities in selected states and selected years in the USA. Then, by cleaning and merging those data, we could get the crime rate of western and eastern Washington States in three years and how many crimes against persons, property, and society have happened in the past three years. Using these data can give us direct graphs to conclude western and eastern crime situations in Washington State. The population of the data is the number of Crime Offenses in cities in WA in the past three years. We use an inner join to get the common cities in three datasets, and the numbers of these cities are the sample in this project.
+
+### 2.6 Discuss any data quality issues you encountered
+
+The analysis reveals notable trends in crime rates across different categories. Despite its comprehensive data collection, it is lacking insights that we have been able to provide. It is only specific to cities within states and does not show regional information. Additionally, it cannot compare years, only providing insights that are cumulative or specific to isolated past years. Also, some cities are in one dataset but missing in the other two, which confused us when trying to figure out why they are missing. When we need to compare the data in western and eastern WA, some statistics regarding those cities will be missed, which may lead to a kind of bias in the study.
+
+### 2.7 What do rows represent in your final dataset?
+
+Regarding our final dataset, its rows represent aggregated crime data categorized by region and year. For instance, one of the rows shows the number of Crime rates, Population, Total Crime Offenses, and Crime Offenses against Person, Property, and Society in the past three years in Eastern WA. 
+
+### 2.8 How many observations do you have?
+
+There are 166 rows in 2020, 150 rows in 2021, 165 rows in 2022.
+
+### 2.9 What are the relevant variables and how are they coded?
+
+The variable "region" includes western and eastern, so we get the cities into these two categories. Then, all the relevant variables are grouped by western and eastern. They are coded by selecting, summing up, renaming, summarizing, mutating, merging(inner join), grouping,  averaging, and reshaping the data into different forms. Specifically, the main codes are : select(), sum(), mutate(), summarize(), mutate(), inner_join(), group_by(), mean(), rename(), pivot_longer(),etc. The Final tables look like these:
+
+
+
+```{r}
+# rename offenses
+washington_2020 <-
+  washington_2020%>%
+  rename(Total_Offenses_2020=colnames("Total
+Offenses"))
+
+washington_2021 <- 
+  washington_2021%>%
+  rename(Total_Offenses_2021=colnames("Total
+Offenses"))
+
+washington_2022 <- 
+  washington_2022%>%
+  rename(Total_Offenses_2022=colnames("Total
+Offenses"))
+```
+
+
+
+```{r}
+# combine cities
+common_cities <- inner_join(washington_2020, washington_2021, by = "Cities") %>%
+                 inner_join(washington_2022, by = "Cities")
+
+```
+
+
+```{r}
+# sorting region
+eastern_cities <- c( "Airway Heights", "Bingen", "Brewster", "Cheney", "Clarkston", "Cle Elum", "College Place", "Colville",
+"Connell", "Coulee Dam", "East Wenatchee", "Ellensburg", "Ephrata", "Grand Coulee","Grandview", "Kennewick", "Kettle Falls",
+"Liberty Lake", "Moses Lake","Moxee", "Othello","Pasco", "Prosser", "Pullman", "Quincy", "Reardan","Richland", "Ritzville", "Royal City", "Selah", "Soap Lake", "Spokane", "Spokane Valley", "Toppenish", "Union Gap", "Walla Walla", "Warden", "Washougal", "Wenatchee", "West Richland", "Yakima")
+
+western_cities <- c( "Aberdeen", "Algona", "Anacortes", "Arlington", "Auburn","Bainbridge Island", "Battle Ground", "Beaux Arts", "Bellevue", "Bellingham", "Black Diamond", "Blaine", "Bonney Lake", "Bothell", "Bremerton","Brier", "Buckley", "Burien", "Burlington", "Camas", "Carnation", "Castle Rock", "Centralia", "Chehalis", "Covington", "Darrington", "Des Moines", "Dupont", "Duvall", "Eatonville", "Edgewood", "Edmonds", "Elma", "Enumclaw", "Everett", "Everson", "Federal Way", "Ferndale", "Fife", "Fircrest", "Gig Harbor", "Gold Bar", "Goldendale", "Granite Falls", "Hoquiam", "Ilwaco", "Index", "Issaquah", "Kalama", "Kelso", "Kenmore", "Kent", "Kirkland", "La Center", "Lacey", "Lake Forest Park", "Lake Stevens", "Lakewood", "Langley", "Long Beach", "Longview", "Lynden", "Lynnwood", "Maple Valley", "Marysville", "Medina", "Mercer Island", "Mill Creek", "Milton", "Monroe", "Montesano", "Mountlake Terrace", "Mount Vernon", "Mukilteo", "Napavine", "Newcastle", "Newport", "Normandy Park", "North Bend", "Oak Harbor", "Oakville", "Olympia", "Orting", "Pacific", "Port Angeles", "Port Orchard", "Port Townsend", "Poulsbo", "Puyallup", "Raymond", "Redmond", "Renton", "Ridgefield", "Roy", "Ruston", "Sammamish", "SeaTac", "Seattle", "Sedro Woolley", "Sequim", "Shelton", "Shoreline", "Skykomish", "Snohomish", "Snoqualmie", "South Bend", "Stanwood", "Steilacoom", "Sultan", "Sumas", "Sumner", "Sunnyside", "Tacoma", "Tukwila", "Tumwater", "University Place", "Vancouver", "Westport", "White Salmon", "Winlock", "Woodinville", "Woodland", "Woodway", "Yelm")
+
+
+common_cities$region <- ifelse(common_cities$Cities %in% eastern_cities, "Eastern", "Western")
+write.csv(common_cities,"/Users/cynthiajyx/Documents/UW/INFO201/FinalProjects/Common Cities.csv")
+
+```
+
+
+```{r}
+# Summarise Amount of Total Crime Types
+common_cities6<-common_cities%>%
+    group_by(region)%>%
+    summarise(Total_Crime_Person_2020=sum(`Crimes
+Against
+Persons.x`),
+            Total_Crime_Person_2021=sum(`Crimes
+Against
+Persons.y`),
+            Total_Crime_Person_2022=sum(`Crimes Against Persons`),
+            Total_Crime_Property_2020=sum(`Crimes
+Against
+Property.x`),
+            Total_Crime_Property_2021=sum(`Crimes
+Against
+Property.y`),
+            Total_Crime_Property_2022=sum(`Crimes Against Property`),
+            Total_Crime_Society_2020=sum(`Crimes
+Against
+Society.x`),
+            Total_Crime_Society_2021=sum(`Crimes
+Against
+Society.y`),
+            Total_Crime_Society_2022=sum(`Crimes Against Society` ))
+
+
+  
+```
+
+
+```{r}
+# Reshape Offenses Type and Merge into One Table along Timeline
+Long_data_type <- common_cities6 %>%
+  select(region,Total_Crime_Person_2020,Total_Crime_Person_2021,Total_Crime_Person_2022)%>%
+  pivot_longer(
+    cols = starts_with("Total_Crime_Person_"),
+    names_to = "Year",
+    names_prefix = "Total_Crime_Person_",
+    values_to = "Total Crime Person"
+  ) %>%
+  mutate(Year = as.integer(Year)) 
+
+print(Long_data_type)
+
+Long_data_type_1 <- common_cities6 %>%
+  select(region,  Total_Crime_Property_2020,  Total_Crime_Property_2021, Total_Crime_Property_2022)%>%
+  pivot_longer(
+    cols = starts_with("Total_Crime_Property_"),
+    names_to = "Year",
+    names_prefix = "Total_Crime_Property_",
+    values_to = "Total Crime Property"
+  ) %>%
+  mutate(Year = as.integer(Year))  # Convert Year to integer if necessary
+
+print( Long_data_type_1)
+
+
+Merge_type<-inner_join(Long_data_type,Long_data_type_1,by=c("Year","region"))
+Merge_type$region.y <- NULL
+names(Merge_type)[names(Merge_type) == 'region.x'] <- 'region'
+
+# print(Merge_type)
+
+Long_data_type_2 <- common_cities6 %>%
+  select(region,   Total_Crime_Society_2020,  Total_Crime_Society_2021,  Total_Crime_Society_2022)%>%
+  pivot_longer(
+    cols = starts_with("Total_Crime_Society_"),
+    names_to = "Year",
+    names_prefix = "Total_Crime_Society_",
+    values_to = "Total Crime Society"
+  ) %>%
+  mutate(Year = as.integer(Year))  # Convert Year to integer if necessary
+
+print( Long_data_type_2)
+
+
+Merge_type2<-inner_join(Merge_type,Long_data_type_2,by=c("Year","region"))
+Merge_type2$region.y <- NULL
+names(Merge_type2)[names(Merge_type2) == 'region.x'] <- 'region'
+print(Merge_type2)
+
+write.csv(Merge_type2,"/Users/cynthiajyx/Documents/UW/INFO201/FinalProjects/Merge_Total_Crime_Types_in_three_years.csv")
+
+```
+
+
+
+
+
+
+```{r}
+# Rename the Variables
+processed_data <- common_cities %>% 
+  select(Cities, region, `Total
+Offenses.x`, `Total
+Offenses.y`, `Total Offences`, Population1.x, Population1.y, Population1) %>% 
+  rename(total_offense_2020 = `Total
+Offenses.x`, total_offense_2021 = `Total
+Offenses.y`, total_offense_2022 = `Total Offences`) %>%
+  rename(Population_2020 = Population1.x,
+         Population_2021 = Population1.y,
+         Population_2022=Population1)
+
+```
+
+
+
+```{r}
+# Crime_rate_cal
+processed_data <-processed_data %>% 
+  mutate(crime_rate_2020 = total_offense_2020 / Population_2020) %>% 
+  mutate(crime_rate_2021 = total_offense_2021 / Population_2021) %>% 
+  mutate(crime_rate_2022 = total_offense_2022 / Population_2022)
+head(processed_data)
+write.csv(processed_data,"/Users/cynthiajyx/Documents/UW/INFO201/FinalProjects/Merge_Rename_Total_Offenses&Population_in_three_years.csv")
+```
+
+
+
+```{r}
+# Reshape Crime Rate along TimeLine
+processed_data2<-processed_data%>%
+  group_by(region)%>%
+  summarise(
+            Total_Population_2020=sum(Population_2020),
+            Total_Population_2021=sum(Population_2021),
+            Total_Population_2022=sum(Population_2022),
+            Total_Offenses_2020=sum(total_offense_2020),
+            Total_Offenses_2021=sum(total_offense_2021),
+            Total_Offenses_2022=sum(total_offense_2022))
+print(processed_data2)
+
+processed_data3<-processed_data2%>%
+  group_by(region)%>%
+ summarise(Total_crime_2020= Total_Offenses_2020/Total_Population_2020,
+            Total_crime_2021= Total_Offenses_2021/Total_Population_2021,
+             Total_crime_2022= Total_Offenses_2022/Total_Population_2022)
+
+ processed_data3<-processed_data3%>%
+   select(region,Total_crime_2020,Total_crime_2021,Total_crime_2022)
+
+ long_data <- processed_data3 %>%
+   pivot_longer(
+     cols = starts_with("Total_crime_"),
+     names_to = "Year",
+     names_prefix = "Total_crime_",
+     values_to = "Crime_Rate"
+   ) %>%
+   mutate(Year = as.integer(Year)) 
+ 
+ print(long_data)
+ write.csv(processed_data2,"/Users/cynthiajyx/Documents/UW/INFO201/FinalProjects/Reshape_Total_Total_Offenses&Population_in_three_years.csv")
+ write.csv(long_data,"/Users/cynthiajyx/Documents/UW/INFO201/FinalProjects/Reshape_Crime_Rate.csv")
+```
+
+### 2.10 Are there any missings, non-plausible values, or other quality issues in the relevant variables? How many?
+
+Since the relevant variables are used after inner join, they do not include any missing or non plausible values, which are pretty convenient for us to graph and get the conclusion.
+
+## 3. Discuss Your Methods 
+### 3.1 Which variables did you include, why?
+
+The variables included in our study are:
+
+Cities: The specific cities from which the data was collected.
+
+Regions (West and East): The categorization of each city into either the West or East region.
+
+Population Data (for three years): This helped in understanding the scale of the areas under study and provided context to the crime data.
+
+Crime Data (for three years): The primary focus of our analysis, this data was crucial for identifying trends and making regional comparisons.
+
+Crime Type: Crime against proprietary; person; or society.
+
+The selection of these variables was driven by our aim to compare crime trends between the East and West regions, providing valuable insights to our target audience.
+
+### 3.2 how did you process your data, why?
+
+Our analysis began with raw data, which we processed extensively to facilitate meaningful analysis. We undertook several key steps:
+
+Trimming and Merging Datasets: The raw data encompassed multiple datasets from different cities. We trimmed these datasets to retain only relevant information and merged them to create a comprehensive dataset. This step was crucial for analyzing regional trends in crime across various cities.
+
+Assigning Regions to Cities: Each city in the dataset was assigned to a region, specifically categorized as either 'West' or 'East'. This regional classification is fundamental to our analysis, as it allows for a comparative study between these two areas.
+
+Data Format Modification: The original dataset format was not immediately compatible with R. We converted it into a format that R could process efficiently, ensuring the smooth running of our subsequent analyses.
+
+Data Summarization: We summarized crime data according to different regions and timelines. This summarization was vital for identifying patterns and trends in crime across different geographical areas and over time.
+
+Reshaping for Readability: The output data was reshaped into a more reader-friendly format. This step was essential for both data visualization and ease of interpretation by our target audience, which includes law enforcement agencies, policymakers, researchers, and the general public in Washington State.
+
+Visualization: We visualized the data, putting together relevant plots for analysis. This step was critical for presenting our findings in an accessible and informative manner.
+
+### 3.3 how did you select your sample?
+The sample selection mirrored our data processing steps. It involved:
+
+Trimming and Merging: Selecting cities from various datasets and merging them based on region.
+Assigning Regions: Categorizing each city into the East or West region.
+
+Data Summarization and Reshaping: Focusing on crime data from different regions and timelines and presenting them in a readable format.
+
+### 3.4 any technical decisions you did, such as either to remove missings, or replace missing values with another one?
+
+In handling the dataset, we faced several challenges:
+
+Conversion to XLS Format: The raw data was converted into an XLS format, making it readable and processable by R.
+
+Renaming Columns: Certain column names in the dataset were renamed for easier data handling and interpretation.
+
+Data Trimming: We eliminated extraneous data to focus on the most relevant and significant information for our analysis.
+
+```{r}
+# Screenshot of Raw Data
+library(magick)
+SS <- image_read("/Users/cynthiajyx/Documents/UW/INFO201/FinalProjects/Screenshot of Raw Data.jpg")
+plot(SS)
+```
+
+### 3.5  if you use more complex statistical methods, such as regression, these should also be discussed here.
+
+In addition to the above methods, we incorporated a regression analysis:
+
+Regression Line: A regression line was added to the crime data visualizations. This statistical method helped us identify and illustrate the overall trend in crime data, offering a broader perspective on the patterns we observed.
+
+## 4. Talk about Your Results
+### 4.1 what does data tell you?
+We initially looked up the crime rates in WA for the years 2020, 2021, and 2022 to provide the audience with a concise overview of how crime rates have evolved in the two regions over time. We utilized the "crime_rate" column, which was created as a new column after each city in the dataset. Subsequently, we grouped the cities by regions, calculated the average crime rate for each region, and assigned distinct colors to represent the two regions in the graphical representation of the data.
+
+The graph indicates notable differences in crime rates between the two regions over the specified time frame. Specifically, in 2020, Eastern WA exhibited a significantly higher crime rate than the western part, which gradually decreased until 2021. Concurrently, the western part of WA maintained a consistent crime rate during the initial two years. By 2021, although Eastern WA still had a slightly higher crime rate than the western part, it began to converge, marking a turning point in their comparative crime rates. Since then, both regions experienced a steady increase in crime rates until 2022.
+
+```{r}
+# ggplot of Crime Rate 
+library(ggplot2)
+long_data%>%
+ ggplot( aes(x = Year, y =Crime_Rate, color = region )) +
+geom_point() + 
+  geom_line(size=1)+  
+  labs(title="Crime Rate over Three Years in WA",
+       x="Year",
+       y="Crime Rate")
+
+```
+
+We then take a closer look at how total population vs total offenses vary between the Eastern and Western parts of Washington. Unlike our initial approach above, where we directly utilized the calculated crime rate for the two regions, our focus here is on showcasing the specific statistical data from each city. To achieve this, we've selected data points for each city's total population and total offenses, with each dot on the graph representing an individual city. This process resulted in the creation of three distinct graphs, each illustrating the situation for a particular year.
+
+Examining the predictive lines that amalgamate cities in each region, a noticeable trend emerges: in 2020, there is a quite lower crime rate in Western Washington. Moving on to the second and third graphs, representing the years 2021 and 2022, the predictive lines consistently point to a slightly higher crime rate in cities located in Eastern Washington.
+
+The use of different colors for dots in these three graphs enables us to compare the number of cities in the two regions of Washington. Although the number of green dots is macroscopically more than that of red dots, the crime rate of western WA represented by green dots does not increase with the increase of cities in any of three years. This brings us with an interesting insights, and provides unexpected value to our work at this stage.
+
+
+```{r}
+# ggplot of Total Offenses vs. Total Population in 3 years
+processed_data%>%
+  filter(Population_2020<=700000)%>%
+ggplot( aes(x = Population_2020, y =total_offense_2020,as.factor(region), color = region)) +
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE)+  
+  labs(title="Total Offenses vs. Population in 2020",
+       x = "Population 2020",
+       y ="Total Offense 2020")+
+  theme_minimal() 
+
+processed_data%>%
+  filter(Population_2021<=700000)%>%
+ggplot( aes(x = Population_2021, y =total_offense_2021,as.factor(region), color = region)) +
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE)  +  
+  labs(title="Total Offenses vs. Population in 2021")+
+   labs(title="Total Offenses vs. Population in 2021",
+       x = "Population 2021",
+       y ="Total Offense 2021")+
+  theme_minimal() 
+processed_data%>%
+  filter(Population_2021<=700000)%>%
+ggplot( aes(x = Population_2022, y =total_offense_2022,as.factor(region), color = region)) +
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE) +  
+   labs(title="Total Offenses vs. Population in 2022",
+       x = "Population 2022",
+       y ="Total Offense 2022")+
+  theme_minimal() 
+```
+
+Finally, we've successfully distinguished the different crime types from the total offenses in the data. As indicated in the raw data, the FBI classifies crime types into three categories: crimes against persons, crimes against property, and crimes against society. Our objective here is to examine the variations in crime types over time and assess whether there are differences in the crime type distribution between the two regions in Washington. The graph illustrates a consistent pattern in both the Eastern and Western parts of Washington, with crimes against property (represented by the blue line) consistently exhibiting significantly higher levels compared to the other categories (represented by the red and green lines) over time.
+
+```{r}
+# ggplot of Offenses Type along Timeline
+df <- data.frame(
+  Region = c('Eastern', 'Eastern', 'Eastern', 'Western', 'Western', 'Western'),
+  Year = c(2020, 2021, 2022, 2020, 2021, 2022),
+  Total_Crime_Person = c(14675, 14721,15973,44555,48233,52366),
+  Total_Crime_Property = c(56354,52523,61167,222688,230480,258446),
+  Total_Crime_Society=c(5246,2632,2766,17741,9185,9847)
+)
+
+
+Type_eastern <- subset(df, Region == 'Eastern')
+Type_western <- subset(df, Region == 'Western')
+
+CT_east <- ggplot(Type_eastern, aes(x = Year)) +
+  geom_line(aes(y = Total_Crime_Person, colour = "Total Crime Person")) +
+  geom_line(aes(y = Total_Crime_Property, colour = "Total Crime Property")) +
+  geom_line(aes(y = Total_Crime_Society, colour = "Total Crime Society")) +
+  scale_colour_manual(name="Crime Type", 
+                      breaks = c("Total Crime Person", "Total Crime Property", "Total Crime Society"),
+                      values = c("Total Crime Person" = "red", "Total Crime Property" = "blue","Total Crime Society" = "green")) +
+  labs(x = "Year", y = "Total Crime Offenses", title = "Eastern Region: Total Population and Total Offenses Over Years",color="Crime Type")
+
+CT_east
+
+
+CT_west <- ggplot(Type_western, aes(x = Year)) +
+  geom_line(aes(y = Total_Crime_Person, colour = "Total Crime Person")) +
+  geom_line(aes(y = Total_Crime_Property, colour = "Total Crime Property")) +
+  geom_line(aes(y = Total_Crime_Society, colour = "Total Crime Society")) +
+  scale_colour_manual(name="Crime Type", 
+                      breaks = c("Total Crime Person", "Total Crime Property", "Total Crime Society"),
+                      values = c("Total Crime Person" = "red", "Total Crime Property" = "blue","Total Crime Society" = "green")) +
+  labs(x = "Year", y = "Total Crime Offenses", title = "Western Region: Total Population and Total Offenses Over Years") 
+
+CT_west
+```
+
+## 5. Discuss your findings
+### 5.1 what do the results tell you regarding of your question you asked in introduction, or about the story line you want to focus on?
+
+Firstly, we successfully identified a key pattern in the crime trend over three years in two regions of WA: the eastern part initially had a higher crime rate in 2020, then experienced a decline, only to rise again in 2022, mirroring the trend in the western part of WA. Summarizing this pattern is meaningful, as it may serve as a clue for policymakers. Specifically, we suggest considering a detailed comparison of Eastern and Western WA to understand why the crime rate in the eastern part dropped so dramatically within a year (2021) and what factors contributed to the subsequent rise in both regions' crime rates in 2022.
+
+In the second part of our results, plotting each city on a graph yielded an unexpected finding. Contrary to our traditional assumptions, regions with more cities, indicating a higher population (the western part represented by green dots), did not exhibit a correlation with higher crime rates (as indicated by the predictive line with a smaller slope). This highlights the complexity of crime statistics and provides valuable insights for researchers in their future studies. Additionally, we emphasize the necessity of a nuanced understanding of regional dynamics, offering a practical insight for law enforcement agencies: police force allocation should not solely be based on city population but should consider various other factors.
+
+The third part of our results not only reveals a similar crime pattern across both regions in WA but also underscores the importance for law enforcement to prioritize efforts in defending against property crimes due to their prevalence in both areas. Recognizing this shared characteristic enables targeted strategies to address common challenges faced by communities in both Western and Eastern Washington.
+
+In summary, our project presents new and valuable insights not yet available from the FBI Crime Data Explorer. These findings pave the way for informed decision-making, contributing to the creation of safer communities across the state.
+
+### 5.2 What are the limitations–how far do you think you can extend your claims or story?
+
+One limitation of our project is that the FBI Crime Data Explorer website only provides access to the past three years' dataset when attempting to retrieve the raw source. This restriction has hindered our ability to combine datasets for Washington (WA) over a more extended period, such as five or ten years. Consequently, our graphs are constrained in displaying a more reliable crime rate trend.
+
+Furthermore, the available data only offers a summary of crime rates on a yearly basis. It would be advantageous if the website also included monthly data documents. With monthly data, we could enhance our analysis by grouping crime rates based on seasons. This expansion would allow us to extend our narrative by examining findings in relation to seasonal variations.
+
+Additionally, the inconvenience arises when updating our code with the subsequent year's dataset. The limitations imposed by the lack of data grouped by years make it necessary to rewrite the code for each section if we wish to incorporate data from a different year.
+
+### 5.3  Give directions for future work–what analysis/data you might need to extend your story further?
+
+To advance our project, researchers could update our dataset with newly released information from the FBI, ensuring our analysis remains current and relevant. As 2023 data is incorporated as well as subsequent years, researchers will be able to update annual information to our existing findings, deepening our understanding of how regional disparities impact crime in Washington State. 
+
+Additionally, our group also envisions an extension of our story to involve broadening the scope of our research beyond the state level to explore nationwide crime rates. By investigating potential regional variations on a national scale, we aim to discern overarching patterns and trends that could provide valuable insights into the factors influencing crime rates and types across diverse geographical contexts. This expansion of our research will not only contribute to a more comprehensive understanding of crime dynamics but also lay the groundwork for informed decision-making at both state and national levels.
+
+### 5.4 At the end, it should include a summary with a takeaway message. 
+
+Our project conducts an in-depth analysis of crime trends in Washington State, with a specific focus on discerning patterns within the Eastern and Western regions. Our primary objective is to contribute to strategic decision-making and policy development, ultimately enhancing public safety. Guided by various research questions, including the evolution of crime rates from 2020 to 2022, disparities between Eastern and Western Washington, prevalence of specific crime types, and the influence of urbanization and population size on crime rates, our investigation aims to fill existing knowledge gaps regarding regional variations in the state.
+
+The significance of our project lies in its potential to foster collaboration among law enforcement, policymakers, researchers, and the public. By considering the unique socio-economic, cultural, and geographic factors that shape crime dynamics in Eastern and Western Washington, our findings offer valuable insights. Law enforcement agencies stand to benefit from enhanced understanding of regional crime patterns, policymakers can formulate evidence-based policies, researchers can deepen their insights into regional crime trends, and the general public can gain knowledge about the safety of their respective regions.
+
+The key takeaway from our results is the revelation of distinct crime trends in Eastern and Western Washington over the past three years, challenging preconceptions and offering critical insights for policymakers and law enforcement. The identified pattern, where the initially higher crime rate in the eastern part in 2020 declined sharply in 2021, only to rise again in 2022, echoes a similar trend in the western part. This pattern serves as a crucial clue for 
+policymakers, urging them to conduct a detailed comparison between the two regions to understand the factors driving these fluctuations.
+
+The unexpected finding that regions with more cities and higher population density did not necessarily correlate with higher crime rates challenges conventional assumptions. This underscores the intricate nature of crime statistics, providing valuable insights for researchers and emphasizing the need for a nuanced understanding of regional dynamics. 
+
+Lastly, the recognition of a shared characteristic in property crimes across both regions highlights the importance for law enforcement to prioritize efforts in this area. This commonality allows for targeted strategies to address challenges faced by communities in both Western and Eastern Washington. In summary, our project contributes new and invaluable insights not found in the FBI Crime Data Explorer, paving the way for informed decision-making and, ultimately, the creation of safer communities across the state. The overarching takeaway is the necessity for adaptable and nuanced approaches in policy making and law enforcement strategies, considering the complexity and unique dynamics of regional crime trends.
