@@ -1,0 +1,33 @@
+---
+title: "Data Documentation"
+output: html_document
+date: "2023-12-07"
+---
+
+### What are the original data sources (including web links or other pointers to the original material)
+a.Weblinks for our data sourcs:https://cde.ucr.cjis.gov/LATEST/webapp/#/pages/downloads
+
+b.The variables included in our study are:
+Cities: The specific cities from which the data was collected.
+Regions (West and East): The categorization of each city into either the West or East region.
+Population Data (for three years): This helped in understanding the scale of the areas under study and provided context to the crime data.
+Crime Data (for three years): The primary focus of our analysis, this data was crucial for identifying trends and making regional comparisons.
+Crime Type: Crime against proprietary; person; or society.
+
+c:
+File "Common Cities.csv" Has 144 rows and 200 variable. There is no NA.
+File "Reshape_Crime_Rate" Has 6 rows and 3 variable. There is no NA.
+File "Merge_Total_Crime_Type_in_three_years" Has 6 rows and 5 variable. There is no NA.
+File "Merge_Rename_Total_offenses&Population_in_three_years" Has 144 rows and 11 variable. There is no NA.
+File "Reshape_Total_offenses&Population_in_three_years" Has 2 rows and 7 variable. There is no NA.
+```{r}
+library(readxl)
+washington_2020 <- read_excel("./Washington_Offense_Type_2020.xls")
+head(washington_2020,8)
+washington_2021 <- read_excel("./Washington_Offense_Type_2021.xls")
+head(washington_2021,8)
+washington_2022 <- read_excel("./Washington_Offense_Type_2022.xls")
+head(washington_2022,8)
+```
+
+### 
