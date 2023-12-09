@@ -1,0 +1,221 @@
+---
+title: "Data cleaning"
+output: html_document
+date: "2023-12-09"
+---
+
+
+```{r}
+library(readxl)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+```{r}
+washington_2020 <- read_excel("./Washington_Offense_Type_2020.xls")
+washington_2021 <- read_excel("./Washington_Offense_Type_2021.xls")
+washington_2022 <- read_excel("./Washington_Offense_Type_2022.xls")
+```
+
+
+
+```{r}
+# rename offenses
+washington_2020 <-
+  washington_2020%>%
+  rename(Total_Offenses_2020=colnames("Total
+Offenses"))
+
+washington_2021 <- 
+  washington_2021%>%
+  rename(Total_Offenses_2021=colnames("Total
+Offenses"))
+
+washington_2022 <- 
+  washington_2022%>%
+  rename(Total_Offenses_2022=colnames("Total
+Offenses"))
+```
+
+
+
+```{r}
+# combine cities
+common_cities <- inner_join(washington_2020, washington_2021, by = "Cities") %>%
+                 inner_join(washington_2022, by = "Cities")
+head(common_cities,8)
+
+```
+
+
+```{r}
+# sorting region
+eastern_cities <- c( "Airway Heights", "Bingen", "Brewster", "Cheney", "Clarkston", "Cle Elum", "College Place", "Colville",
+"Connell", "Coulee Dam", "East Wenatchee", "Ellensburg", "Ephrata", "Grand Coulee","Grandview", "Kennewick", "Kettle Falls",
+"Liberty Lake", "Moses Lake","Moxee", "Othello","Pasco", "Prosser", "Pullman", "Quincy", "Reardan","Richland", "Ritzville", "Royal City", "Selah", "Soap Lake", "Spokane", "Spokane Valley", "Toppenish", "Union Gap", "Walla Walla", "Warden", "Washougal", "Wenatchee", "West Richland", "Yakima")
+
+western_cities <- c( "Aberdeen", "Algona", "Anacortes", "Arlington", "Auburn","Bainbridge Island", "Battle Ground", "Beaux Arts", "Bellevue", "Bellingham", "Black Diamond", "Blaine", "Bonney Lake", "Bothell", "Bremerton","Brier", "Buckley", "Burien", "Burlington", "Camas", "Carnation", "Castle Rock", "Centralia", "Chehalis", "Covington", "Darrington", "Des Moines", "Dupont", "Duvall", "Eatonville", "Edgewood", "Edmonds", "Elma", "Enumclaw", "Everett", "Everson", "Federal Way", "Ferndale", "Fife", "Fircrest", "Gig Harbor", "Gold Bar", "Goldendale", "Granite Falls", "Hoquiam", "Ilwaco", "Index", "Issaquah", "Kalama", "Kelso", "Kenmore", "Kent", "Kirkland", "La Center", "Lacey", "Lake Forest Park", "Lake Stevens", "Lakewood", "Langley", "Long Beach", "Longview", "Lynden", "Lynnwood", "Maple Valley", "Marysville", "Medina", "Mercer Island", "Mill Creek", "Milton", "Monroe", "Montesano", "Mountlake Terrace", "Mount Vernon", "Mukilteo", "Napavine", "Newcastle", "Newport", "Normandy Park", "North Bend", "Oak Harbor", "Oakville", "Olympia", "Orting", "Pacific", "Port Angeles", "Port Orchard", "Port Townsend", "Poulsbo", "Puyallup", "Raymond", "Redmond", "Renton", "Ridgefield", "Roy", "Ruston", "Sammamish", "SeaTac", "Seattle", "Sedro Woolley", "Sequim", "Shelton", "Shoreline", "Skykomish", "Snohomish", "Snoqualmie", "South Bend", "Stanwood", "Steilacoom", "Sultan", "Sumas", "Sumner", "Sunnyside", "Tacoma", "Tukwila", "Tumwater", "University Place", "Vancouver", "Westport", "White Salmon", "Winlock", "Woodinville", "Woodland", "Woodway", "Yelm")
+
+
+common_cities$region <- ifelse(common_cities$Cities %in% eastern_cities, "Eastern", "Western")
+
+
+head(common_cities,8)
+```
+
+
+```{r}
+# Summarise Amount of Total Crime Types
+common_cities6<-common_cities%>%
+    group_by(region)%>%
+    summarise(Total_Crime_Person_2020=sum(`Crimes
+Against
+Persons.x`),
+            Total_Crime_Person_2021=sum(`Crimes
+Against
+Persons.y`),
+            Total_Crime_Person_2022=sum(`Crimes Against Persons`),
+            Total_Crime_Property_2020=sum(`Crimes
+Against
+Property.x`),
+            Total_Crime_Property_2021=sum(`Crimes
+Against
+Property.y`),
+            Total_Crime_Property_2022=sum(`Crimes Against Property`),
+            Total_Crime_Society_2020=sum(`Crimes
+Against
+Society.x`),
+            Total_Crime_Society_2021=sum(`Crimes
+Against
+Society.y`),
+            Total_Crime_Society_2022=sum(`Crimes Against Society` ))
+
+head(common_cities6,8)
+  
+```
+
+
+```{r}
+# Reshape Offenses Type and Merge into One Table along Timeline
+Long_data_type <- common_cities6 %>%
+  select(region,Total_Crime_Person_2020,Total_Crime_Person_2021,Total_Crime_Person_2022)%>%
+  pivot_longer(
+    cols = starts_with("Total_Crime_Person_"),
+    names_to = "Year",
+    names_prefix = "Total_Crime_Person_",
+    values_to = "Total Crime Person"
+  ) %>%
+  mutate(Year = as.integer(Year)) 
+
+print(Long_data_type)
+
+Long_data_type_1 <- common_cities6 %>%
+  select(region,  Total_Crime_Property_2020,  Total_Crime_Property_2021, Total_Crime_Property_2022)%>%
+  pivot_longer(
+    cols = starts_with("Total_Crime_Property_"),
+    names_to = "Year",
+    names_prefix = "Total_Crime_Property_",
+    values_to = "Total Crime Property"
+  ) %>%
+  mutate(Year = as.integer(Year))  # Convert Year to integer if necessary
+
+print( Long_data_type_1)
+
+
+Merge_type<-inner_join(Long_data_type,Long_data_type_1,by=c("Year","region"))
+Merge_type$region.y <- NULL
+names(Merge_type)[names(Merge_type) == 'region.x'] <- 'region'
+
+# print(Merge_type)
+
+Long_data_type_2 <- common_cities6 %>%
+  select(region,   Total_Crime_Society_2020,  Total_Crime_Society_2021,  Total_Crime_Society_2022)%>%
+  pivot_longer(
+    cols = starts_with("Total_Crime_Society_"),
+    names_to = "Year",
+    names_prefix = "Total_Crime_Society_",
+    values_to = "Total Crime Society"
+  ) %>%
+  mutate(Year = as.integer(Year))  # Convert Year to integer if necessary
+
+print( Long_data_type_2)
+
+
+Merge_type2<-inner_join(Merge_type,Long_data_type_2,by=c("Year","region"))
+Merge_type2$region.y <- NULL
+names(Merge_type2)[names(Merge_type2) == 'region.x'] <- 'region'
+print(Merge_type2)
+
+
+
+```
+
+
+
+
+
+
+```{r}
+# Rename the Variables
+processed_data <- common_cities %>% 
+  select(Cities, region, `Total
+Offenses.x`, `Total
+Offenses.y`, `Total Offences`, Population1.x, Population1.y, Population1) %>% 
+  rename(total_offense_2020 = `Total
+Offenses.x`, total_offense_2021 = `Total
+Offenses.y`, total_offense_2022 = `Total Offences`) %>%
+  rename(Population_2020 = Population1.x,
+         Population_2021 = Population1.y,
+         Population_2022=Population1)
+
+```
+
+
+
+```{r}
+# Crime_rate_cal
+processed_data <-processed_data %>% 
+  mutate(crime_rate_2020 = total_offense_2020 / Population_2020) %>% 
+  mutate(crime_rate_2021 = total_offense_2021 / Population_2021) %>% 
+  mutate(crime_rate_2022 = total_offense_2022 / Population_2022)
+head(processed_data)
+
+```
+
+
+
+```{r}
+# Reshape Crime Rate along TimeLine
+processed_data2<-processed_data%>%
+  group_by(region)%>%
+  summarise(
+            Total_Population_2020=sum(Population_2020),
+            Total_Population_2021=sum(Population_2021),
+            Total_Population_2022=sum(Population_2022),
+            Total_Offenses_2020=sum(total_offense_2020),
+            Total_Offenses_2021=sum(total_offense_2021),
+            Total_Offenses_2022=sum(total_offense_2022))
+print(processed_data2)
+
+processed_data3<-processed_data2%>%
+  group_by(region)%>%
+ summarise(Total_crime_2020= Total_Offenses_2020/Total_Population_2020,
+            Total_crime_2021= Total_Offenses_2021/Total_Population_2021,
+             Total_crime_2022= Total_Offenses_2022/Total_Population_2022)
+
+ processed_data3<-processed_data3%>%
+   select(region,Total_crime_2020,Total_crime_2021,Total_crime_2022)
+
+ long_data <- processed_data3 %>%
+   pivot_longer(
+     cols = starts_with("Total_crime_"),
+     names_to = "Year",
+     names_prefix = "Total_crime_",
+     values_to = "Crime_Rate"
+   ) %>%
+   mutate(Year = as.integer(Year)) 
+ 
+ print(long_data)
+
+```
